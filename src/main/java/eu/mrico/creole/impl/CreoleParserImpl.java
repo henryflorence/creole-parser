@@ -233,7 +233,7 @@ class CreoleParserImpl implements CreoleParser {
             }
 
             if (c == '|') {
-                target = sb.toString();
+                target = sb.toString().trim();
                 sb = new StringBuffer();
 
             } else if (c == ']' && nextChar == ']') {
@@ -250,7 +250,7 @@ class CreoleParserImpl implements CreoleParser {
         }
 
         if (label == null && sb.length() > 0) {
-            label = sb.toString();
+            label = sb.toString().trim();
         } else {
             label = target;
         }

@@ -3,16 +3,23 @@ package eu.mrico.creole.xhtml;
 import eu.mrico.creole.Creole;
 import eu.mrico.creole.CreoleException;
 import eu.mrico.creole.ast.Link;
+
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
+import java.io.OutputStream;
+
 import eu.mrico.creole.ast.Heading;
 import eu.mrico.creole.ast.Document;
 import eu.mrico.creole.ast.Image;
 import eu.mrico.creole.ast.Paragraph;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -98,5 +105,34 @@ public class XHtmlWriterTest {
         writer.write(doc, xw);
 
         verify(xw).writeStartElement("div");
+    }
+    
+    @Test
+    public void testElementAnchor() throws CreoleException, XMLStreamException {
+
+        // create anonymous decorator
+        XHtmlElementDecorator<Link> decorator = new XHtmlElementDecorator<Link>() {
+
+            @Override
+            public void before(Link element, XMLStreamWriter writer) throws XMLStreamException {
+                writer.writeAttribute("target", "_blank");
+            }
+
+            @Override
+            public void after(Link element, XMLStreamWriter writer) throws XMLStreamException {
+
+            }
+        };
+
+        Document doc = Creole.parse("[[ http://www.google.com | google ]]");
+        
+        OutputStream out = new ByteArrayOutputStream();
+        
+        XHtmlWriter writer = new XHtmlWriter();
+        writer.setDecorator(Link.class, decorator);
+
+        writer.write(doc, out);
+        
+        assertEquals(out.toString(), "<a target=\"_blank\" href=\"http://www.google.com\">google</a>");
     }
 }

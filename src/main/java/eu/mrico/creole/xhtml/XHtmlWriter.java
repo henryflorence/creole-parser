@@ -225,10 +225,12 @@ public class XHtmlWriter implements CreoleWriter, Visitor {
     public void visit(Link l) {
         try {
             XHtmlElementDecorator decorator = decoratorsMap.get(Link.class);
+            
+            writeStartElement("a");
+            
             if(decorator != null)
                 decorator.before(l, writer);
 
-            writeStartElement("a");
             writer.writeAttribute("href", l.getTarget());
 
             for(Element child : l)
@@ -237,7 +239,7 @@ public class XHtmlWriter implements CreoleWriter, Visitor {
             writer.writeEndElement();
 
             if(decorator != null)
-                decorator.before(l, writer);
+                decorator.after(l, writer);
             
         } catch (XMLStreamException e) {
             throw new RuntimeException(e);
